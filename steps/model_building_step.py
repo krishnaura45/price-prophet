@@ -9,6 +9,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.linear_model import ElasticNet, Lasso, LinearRegression
 import xgboost as xgb
 import lightgbm as lgb
+from sklearn.ensemble import StackingRegressor
 from sklearn.pipeline import Pipeline
 from sklearn.base import BaseEstimator, TransformerMixin, RegressorMixin, clone
 from sklearn.preprocessing import OneHotEncoder, RobustScaler
@@ -26,28 +27,7 @@ model = Model(
     description="Price prediction model for houses in USA.",
 )
 
-# Simple stacking strategy - averaging base models
-class AveragingModels(BaseEstimator, RegressorMixin, TransformerMixin):
-    def __init__(self, models):
-        self.models = models
-        
-    # define clones of the original models to fit the data in
-    def fit(self, X, y):
-        self.models_ = [clone(x) for x in self.models]
-        
-        # train cloned base models
-        for model in self.models_:
-            model.fit(X, y)
-
-        return self
-    
-    # do the predictions for cloned models and average them
-    def predict(self, X):
-        predictions = np.column_stack([
-            model.predict(X) for model in self.models_
-        ])
-        return np.mean(predictions, axis=1)
-
+# Defining models
 lin_reg = LinearRegression()
 lasso = Lasso(alpha =0.0005, random_state=1)
 ENet = ElasticNet(alpha=0.0005, l1_ratio=.9, random_state=3)
@@ -63,6 +43,14 @@ model_lgb = lgb.LGBMRegressor(objective='regression',num_leaves=5,
                               bagging_freq = 5, feature_fraction = 0.2319,
                               feature_fraction_seed=9, bagging_seed=9,
                               min_data_in_leaf =6, min_sum_hessian_in_leaf = 11)
+
+# Using stacking ensemble (w.r.t meta model as linear regression)
+meta_model = lin_reg
+stacked_model = StackingRegressor(
+    estimators=[('xgb', model_xgb), ('lgb', model_lgb)],
+    final_estimator=meta_model,
+    passthrough=True
+)
 
 @step(enable_cache=False, experiment_tracker=experiment_tracker.name, model=model)
 def model_building_step(
@@ -115,7 +103,7 @@ def model_building_step(
     )
 
     # # Define the model training pipeline
-    pipeline = Pipeline(steps=[("preprocessor", preprocessor), ("model", AveragingModels(models = (model_lgb, model_xgb, lin_reg)))])
+    pipeline = Pipeline(steps=[("preprocessor", preprocessor), ("model", stacked_model)])
 
     # Start an MLflow run to log the model training process
     if not mlflow.active_run():
