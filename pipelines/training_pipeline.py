@@ -11,7 +11,7 @@ from zenml import Model, pipeline, step
 @pipeline(
     model=Model(
         # The name uniquely identifies this model
-        name="prices_predictor_2.0"
+        name="prices_predictor"
     ),
 )
 def ml_pipeline():
@@ -19,7 +19,7 @@ def ml_pipeline():
 
     # Data Ingestion Step
     raw_data = data_ingestion_step(
-        file_path="C:/Users/Krishna/Downloads/major-project/pp-old/data/archive.zip"
+        file_path="data/archive.zip"
     )
 
     # Handling Missing Values Step
