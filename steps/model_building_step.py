@@ -3,15 +3,11 @@ from typing import Annotated
 
 import mlflow
 import pandas as pd
-import numpy as np
+from sklearn.base import RegressorMixin
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
-from sklearn.linear_model import ElasticNet, Lasso, LinearRegression
-import xgboost as xgb
-import lightgbm as lgb
-from sklearn.ensemble import StackingRegressor
+from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import Pipeline
-from sklearn.base import BaseEstimator, TransformerMixin, RegressorMixin, clone
 from sklearn.preprocessing import OneHotEncoder, RobustScaler
 from zenml import ArtifactConfig, step
 from zenml.client import Client
@@ -21,50 +17,26 @@ experiment_tracker = Client().active_stack.experiment_tracker
 from zenml import Model
 
 model = Model(
-    name="prices_predictor_2.0",
+    name="prices_predictor",
     version=None,
     license="Apache 2.0",
-    description="Price prediction model for houses in USA.",
+    description="Price prediction model for houses.",
 )
 
-# Defining models
-lin_reg = LinearRegression()
-lasso = Lasso(alpha =0.0005, random_state=1)
-ENet = ElasticNet(alpha=0.0005, l1_ratio=.9, random_state=3)
-model_xgb = xgb.XGBRegressor(colsample_bytree=0.4603, gamma=0.0468, 
-                             learning_rate=0.05, max_depth=3, 
-                             min_child_weight=1.7817, n_estimators=2200,
-                             reg_alpha=0.4640, reg_lambda=0.8571,
-                             subsample=0.5213, silent=1,
-                             random_state =7, nthread = -1)
-model_lgb = lgb.LGBMRegressor(objective='regression',num_leaves=5,
-                              learning_rate=0.05, n_estimators=720,
-                              max_bin = 55, bagging_fraction = 0.8,
-                              bagging_freq = 5, feature_fraction = 0.2319,
-                              feature_fraction_seed=9, bagging_seed=9,
-                              min_data_in_leaf =6, min_sum_hessian_in_leaf = 11)
-
-# Using stacking ensemble (w.r.t meta model as linear regression)
-meta_model = lin_reg
-stacked_model = StackingRegressor(
-    estimators=[('xgb', model_xgb), ('lgb', model_lgb)],
-    final_estimator=meta_model,
-    passthrough=True
-)
 
 @step(enable_cache=False, experiment_tracker=experiment_tracker.name, model=model)
 def model_building_step(
     X_train: pd.DataFrame, y_train: pd.Series
 ) -> Annotated[Pipeline, ArtifactConfig(name="sklearn_pipeline", is_model_artifact=True)]:
     """
-    Builds and trains a simple stacked model wrapped in a pipeline.
+    Builds and trains a Linear Regression model using scikit-learn wrapped in a pipeline.
 
     Parameters:
     X_train (pd.DataFrame): The training data features.
     y_train (pd.Series): The training data labels/target.
 
     Returns:
-    Pipeline: The trained scikit-learn pipeline including preprocessing and the stacked model.
+    Pipeline: The trained scikit-learn pipeline including preprocessing and the Linear Regression model.
     """
     # Ensure the inputs are of the correct type
     if not isinstance(X_train, pd.DataFrame):
@@ -102,8 +74,9 @@ def model_building_step(
         ]
     )
 
-    # # Define the model training pipeline
-    pipeline = Pipeline(steps=[("preprocessor", preprocessor), ("model", stacked_model)])
+    #  Define the model training pipeline
+    lin_reg = LinearRegression()
+    pipeline = Pipeline(steps=[("preprocessor", preprocessor), ("model", lin_reg)])
 
     # Start an MLflow run to log the model training process
     if not mlflow.active_run():
