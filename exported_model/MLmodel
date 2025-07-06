@@ -1,0 +1,60 @@
+artifact_path: model
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.10.5
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.2.2
+is_signature_from_type_hint: false
+mlflow_version: 2.22.0
+model_size_bytes: 2607163
+model_uuid: ddda7148af3b46ceb0f7dd9758c4fd97
+prompts: null
+run_id: b67942a0c963443694a38c48700b45dc
+signature:
+  inputs: '[{"type": "string", "name": "MS SubClass", "required": true}, {"type":
+    "string", "name": "MS Zoning", "required": true}, {"type": "double", "name": "Lot
+    Frontage", "required": true}, {"type": "long", "name": "Lot Area", "required":
+    true}, {"type": "string", "name": "Lot Shape", "required": true}, {"type": "string",
+    "name": "Lot Config", "required": true}, {"type": "string", "name": "Neighborhood",
+    "required": true}, {"type": "string", "name": "Bldg Type", "required": true},
+    {"type": "string", "name": "House Style", "required": true}, {"type": "long",
+    "name": "Overall Qual", "required": true}, {"type": "long", "name": "Overall Cond",
+    "required": true}, {"type": "string", "name": "Year Built", "required": true},
+    {"type": "string", "name": "Year Remod/Add", "required": true}, {"type": "string",
+    "name": "Roof Style", "required": true}, {"type": "string", "name": "Exterior
+    1st", "required": true}, {"type": "string", "name": "Exterior 2nd", "required":
+    true}, {"type": "long", "name": "Exter Qual", "required": true}, {"type": "long",
+    "name": "Exter Cond", "required": true}, {"type": "string", "name": "Foundation",
+    "required": true}, {"type": "long", "name": "Bsmt Qual", "required": true}, {"type":
+    "long", "name": "Bsmt Exposure", "required": true}, {"type": "long", "name": "BsmtFin
+    Type 1", "required": true}, {"type": "long", "name": "BsmtFin Type 2", "required":
+    true}, {"type": "double", "name": "Total Bsmt SF", "required": true}, {"type":
+    "long", "name": "Heating QC", "required": true}, {"type": "long", "name": "Gr
+    Liv Area", "required": true}, {"type": "long", "name": "Bedroom AbvGr", "required":
+    true}, {"type": "long", "name": "Kitchen AbvGr", "required": true}, {"type": "long",
+    "name": "Kitchen Qual", "required": true}, {"type": "long", "name": "TotRms AbvGrd",
+    "required": true}, {"type": "string", "name": "Garage Type", "required": true},
+    {"type": "string", "name": "Garage Yr Blt", "required": true}, {"type": "long",
+    "name": "Garage Finish", "required": true}, {"type": "double", "name": "Garage
+    Cars", "required": true}, {"type": "double", "name": "Garage Area", "required":
+    true}, {"type": "string", "name": "Mo Sold", "required": true}, {"type": "string",
+    "name": "Yr Sold", "required": true}, {"type": "string", "name": "Sale Type",
+    "required": true}, {"type": "string", "name": "Sale Condition", "required": true},
+    {"type": "long", "name": "Id", "required": true}, {"type": "double", "name": "Bath_total",
+    "required": true}, {"type": "double", "name": "BsmtFinSF", "required": true},
+    {"type": "long", "name": "Porch", "required": true}, {"type": "long", "name":
+    "FinSF", "required": true}, {"type": "string", "name": "Condition", "required":
+    true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "float64", "shape": [-1]}}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2025-06-18 10:48:50.717949'
